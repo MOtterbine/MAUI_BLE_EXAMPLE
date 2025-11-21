@@ -4,7 +4,7 @@ using System.Globalization;
 
 namespace MAUI_BLE_EXAMPLE.Converters;
 
-public class ByteToButtonText : IValueConverter
+public class ByteToSwitchText : IValueConverter
 {
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
     {
@@ -12,7 +12,7 @@ public class ByteToButtonText : IValueConverter
         {
             return "Off";
         }
-        return "Pressed";
+        return "On";
     }
 
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

@@ -100,7 +100,7 @@
                                 <VerticalStackLayout HorizontalOptions="Center" Margin="0" Padding="0" >
                                     <Label Style="{StaticResource ParamTitle}" Text="Button"></Label>
                                     <Label HorizontalTextAlignment="Center" HorizontalOptions="Center" FontSize="28"  Padding="0" Margin="0"
-                                        VerticalOptions="Center" VerticalTextAlignment="Center" FontAttributes="Bold"  Text="{Binding ButtonValue, Converter={converters:ByteToSwitchText}}"></Label>
+                                        VerticalOptions="Center" VerticalTextAlignment="Center" FontAttributes="Bold"  Text="{Binding ButtonValue, Converter={converters:ByteToButtonText}}"></Label>
                                 </VerticalStackLayout>
                         </Frame>
 

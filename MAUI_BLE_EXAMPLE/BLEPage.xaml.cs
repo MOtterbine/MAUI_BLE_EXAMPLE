@@ -8,7 +8,6 @@ using OS.BLE;
 
 #if WINDOWS || ANDROID
 using CommunityToolkit.Maui.Views;
-using Microsoft.UI.Xaml.Controls;
 
 #endif
 
@@ -74,7 +73,6 @@ public partial class BLEPage : ContentPage
             pApp.Sleep += OnAppSleep;
             pApp.Resume += OnAppResume;
         }
-
 
         pApp.AppClosing += OnAppClosing;
 
@@ -210,13 +208,7 @@ public partial class BLEPage : ContentPage
 
     public bool IsButtonPressed => !(_buttonValue == 0);
 
-
-
-
     public String DeviceName => _Esp32SuperMini == null ? Constants.STRING_NONE : _Esp32SuperMini.Name;
-
-
-
 
     public UInt16 PWM
     {
@@ -241,7 +233,7 @@ public partial class BLEPage : ContentPage
             OnPropertyChanged(nameof(ToggleButtonText));
         }
     }
-    private String _ToggleButtonText = Constants.STRING_BUTTON_LABEL_ON;
+    private String _ToggleButtonText = Constants.STRING_BUTTON_LABEL_OFF;
 
 
 
@@ -255,11 +247,11 @@ public partial class BLEPage : ContentPage
             _LEDValue = value;
             if (value == 0)
             {
-                ToggleButtonText = Constants.STRING_BUTTON_LABEL_OFF;
+                ToggleButtonText = Constants.STRING_BUTTON_LABEL_ON;
             }
             else
             {
-                ToggleButtonText = Constants.STRING_BUTTON_LABEL_ON;
+                ToggleButtonText = Constants.STRING_BUTTON_LABEL_OFF;
             }
 
             OnPropertyChanged(nameof(LEDValue));
