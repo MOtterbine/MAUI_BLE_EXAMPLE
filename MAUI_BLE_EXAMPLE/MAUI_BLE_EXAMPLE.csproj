@@ -83,7 +83,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\..\OS.BLE\OS.BLE.csproj" />
+	  <ProjectReference Include="..\OS.BLE\OS.BLE.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>
