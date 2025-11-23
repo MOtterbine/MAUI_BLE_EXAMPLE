@@ -442,8 +442,10 @@ public partial class BLEPage : ContentPage
         Application.Current.Dispatcher.DispatchAsync(() =>
         {
             en.Focus();
+#if WINDOWS // in android this will cause keyboard to keep reopening
             en.CursorPosition = 0;
-           en.SelectionLength = 4;
+           en.SelectionLength = 4; // length is limited in xaml
+#endif
         });
     }
 

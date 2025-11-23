@@ -149,6 +149,7 @@
                                     <Entry
                                         VerticalOptions="Center"
                                         MaxLength="3"
+                                        behaviors:PercentValidationBehavior.AttachBehavior="True"
                                         HorizontalTextAlignment="End"
                                             Margin="0"
                                             WidthRequest="65"
