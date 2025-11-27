@@ -441,11 +441,11 @@ public partial class BLEPage : ContentPage
         if (en == null) return;
         Application.Current.Dispatcher.DispatchAsync(() =>
         {
+//#if WINDOWS // in android this will cause keyboard to keep reopening
             en.Focus();
-#if WINDOWS // in android this will cause keyboard to keep reopening
             en.CursorPosition = 0;
            en.SelectionLength = 4; // length is limited in xaml
-#endif
+//#endif
         });
     }
 
