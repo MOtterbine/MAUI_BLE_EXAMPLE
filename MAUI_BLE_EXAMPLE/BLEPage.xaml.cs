@@ -19,7 +19,7 @@ namespace MAUI_BLE_EXAMPLE;
 
 public partial class BLEPage : ContentPage
 {
-    public static string Version => Assembly.GetExecutingAssembly().GetName().Version.ToString();
+    public string Version => Assembly.GetExecutingAssembly().GetName().Version.ToString();
 
     readonly App pApp = ((App)App.Current);
     IMyBLEControl _Esp32SuperMini;
@@ -429,6 +429,11 @@ public partial class BLEPage : ContentPage
 
     }
 
+    protected override void OnAppearing()
+    {
+        base.OnAppearing();
+    }
+
     private void OnBLEStopScanClicked(object sender, EventArgs e)
     {
         CanSend = false;
@@ -452,5 +457,15 @@ public partial class BLEPage : ContentPage
         });
     }
 
+    private void OnPWMFocused(object sender, FocusEventArgs e)
+    {
+        var en = sender as Entry;
+        if (en == null) return;
+        Application.Current.Dispatcher.DispatchAsync(() =>
+        {
+            en.CursorPosition = 0;
+            en.SelectionLength = 4; // length is limited in xaml
+        });
 
+    }
 }

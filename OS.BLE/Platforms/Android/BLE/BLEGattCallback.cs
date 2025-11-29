@@ -4,6 +4,7 @@ using Android.Bluetooth.LE;
 using Android.Runtime;
 using Java.Util;
 using System.Text;
+using static Android.Media.Audiofx.AudioEffect;
 
 namespace OS.BLE;
 
@@ -12,7 +13,6 @@ public class BLEGattCallback : BluetoothGattCallback
     public event GattEvent GattEvent;
 
     private AutoResetEvent gattOperationPending = new AutoResetEvent(true);
-    //private AutoResetEvent gattReadOperationPending = new AutoResetEvent(true);
 
     /// <summary>
     /// Client Characteristic Configuration UUID
@@ -24,15 +24,17 @@ public class BLEGattCallback : BluetoothGattCallback
         if ((properties & GattProperty.Notify) > 0)
         {
 
+            // Set the charactersistic notification flag
             gatt.SetCharacteristicNotification (characteristic, true);
 
             BluetoothGattDescriptor descriptor = characteristic.GetDescriptor(CCC_DESCRIPTOR_UUID);
             descriptor.SetValue(BluetoothGattDescriptor.EnableNotificationValue.ToArray());
-           // descriptor.
-            // Don't enter with a pending operation - is freed in OnDescriptorWrite(...) 
+
+            // Wait for any previous write to complete
             gattOperationPending.WaitOne();
 
-            gatt.WriteDescriptor(descriptor) ;
+            // Write the descriptor to enable notifications
+            gatt.WriteDescriptor(descriptor);
 
         }
     }
@@ -51,21 +53,23 @@ public class BLEGattCallback : BluetoothGattCallback
     /// <param name="_characteristicList"></param>
     public void BindCharacteristics(BluetoothGatt gatt, IList<BluetoothGattCharacteristic> _characteristicList)
     {
-
-        // Get Characteristic Value Changed Notifications
+        // Initial Read of Characteristics
         gattOperationPending.Set();
-
-        foreach (var item in _characteristicList)
-        {
-            enableNotifications(gatt, item);
-        }
-
         foreach (var item in _characteristicList)
         {
             // Auto resets (blocks) after WaitOne is called - until gattOperationPending.Set() is called again
-            gattOperationPending.WaitOne();
             gatt.ReadCharacteristic(item);
+            gattOperationPending.WaitOne();
         }
+
+        // Get Characteristic Value Changed Notifications
+        gattOperationPending.Set();
+        foreach (var item in _characteristicList)
+        {
+            enableNotifications(gatt, item);
+
+        }
+
 
     }
 

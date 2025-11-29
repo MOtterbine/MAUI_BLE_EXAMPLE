@@ -13,17 +13,7 @@
              x:Class="MAUI_BLE_EXAMPLE.BLEPage">
 
     <ContentPage.Resources>
-        <Style TargetType="Frame">
-            <Setter Property="Padding" Value="2"/>
-            <Setter Property="Margin" Value="1"/>
-            <Setter Property="BorderColor" Value="#555" />
 
-        </Style>
-        <Style TargetType="Label">
-            <Setter Property="TextColor" Value="#559" />
-            <Setter Property="FontSize" Value="Medium" />
-
-        </Style>
         
         <Style x:Key="ParamTitle" TargetType="Label">
             <Setter Property="TextColor" Value="#444" />
@@ -60,8 +50,9 @@
                     HorizontalTextAlignment="Center" Margin="0" Padding="0"
                     SemanticProperties.HeadingLevel="Level1" />
                 <Label 
-                    Text="{Binding Version, StringFormat='v{0}'}"  FontSize="Small"
+                    Text="{Binding Version, StringFormat='v{0}'}"  FontSize="Micro"
                     Style="{StaticResource SubHeadline}" Margin="0" Padding="0" />
+
             </VerticalStackLayout>
             
             <!-- Body -->
@@ -69,7 +60,7 @@
                 VerticalOptions="Center"
                 Padding="30,10"
                 Spacing="15">
-                <Frame Background="#B55">
+                <Border >
                     <Grid>
                     
                         <Grid.RowDefinitions>
@@ -85,28 +76,28 @@
                         </Grid.ColumnDefinitions>
 
                         <!-- Temperature -->
-                        <Frame Grid.Row="0" Grid.Column="0">
+                        <Border Grid.Row="0" Grid.Column="0">
                             <HorizontalStackLayout HorizontalOptions="Center">
                                 <VerticalStackLayout HorizontalOptions="Center">
                                     <Label Style="{StaticResource ParamTitle}" Text="Temperature"></Label>
                                     <Label HorizontalTextAlignment="Center" FontSize="28" Padding="0,0" Margin="0,0" VerticalOptions="Center" VerticalTextAlignment="Center" FontAttributes="Bold" Text="{Binding Temperature, StringFormat='{0:f0}º'}"></Label>
                                 </VerticalStackLayout>
                             </HorizontalStackLayout>
-                        </Frame>
+                        </Border>
 
 
                         <!-- Button -->
-                        <Frame Grid.Row="0" Grid.Column="1">
+                        <Border Grid.Row="0" Grid.Column="1">
                                 <VerticalStackLayout HorizontalOptions="Center" Margin="0" Padding="0" >
                                     <Label Style="{StaticResource ParamTitle}" Text="Button"></Label>
                                     <Label HorizontalTextAlignment="Center" HorizontalOptions="Center" FontSize="28"  Padding="0" Margin="0"
                                         VerticalOptions="Center" VerticalTextAlignment="Center" FontAttributes="Bold"  Text="{Binding ButtonValue, Converter={converters:ByteToButtonText}}"></Label>
                                 </VerticalStackLayout>
-                        </Frame>
+                        </Border>
 
                        
                         <!-- Device Message -->
-                        <Frame Grid.Row="2" Grid.ColumnSpan="3" >
+                        <Border Grid.Row="2" Grid.ColumnSpan="3" >
                             <Grid >
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="Auto"/>
@@ -118,11 +109,13 @@
                                 <Label Grid.Row="1"  HorizontalTextAlignment="Start" Padding="0,0" Margin="5,0,0,10" VerticalOptions="Center" 
                                        VerticalTextAlignment="Center" FontAttributes="Bold"  Text="{Binding DeviceMessage}" LineBreakMode="TailTruncation"></Label>
                             </Grid>
-                        </Frame>
+                        </Border>
 
 
 
-                        <Frame Grid.Row="3" Grid.Column="0" >
+                        <Border Grid.Row="3" Grid.Column="0" 
+                            ToolTipProperties.Text="Toggles PWM power">
+
                             <HorizontalStackLayout HorizontalOptions="Center" Padding="0" Margin="0" Spacing="0" >
                                 <!-- LED Switch -->
                                 <Button
@@ -140,9 +133,10 @@
 
 
                             </HorizontalStackLayout>
-                        </Frame>
+                        </Border>
 
-                        <Frame Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2" >
+                        <Border Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2" 
+                                ToolTipProperties.Text="Sets the percent pulse-width-modulation (PWM) value">
                             <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Padding="0" Margin="0" Spacing="0" >
                                     <Label Style="{StaticResource ParamTitle}" Text="PWM (%)" VerticalOptions="Start"></Label>
                                     <!-- PWM -->
@@ -158,16 +152,17 @@
                                             Text="{Binding PWM}"
                                             IsEnabled="{Binding CanSend}"
                                             Completed="OnPWMCompleted"
-                                            SemanticProperties.Hint="Sends the specified string"
+                                            SemanticProperties.Hint="Sets the percent pulse-width-modulation (PWM) value"
                                             
+                                            Focused="OnPWMFocused"
                                             HorizontalOptions="End" />
 
                             </VerticalStackLayout>
-                        </Frame>
+                        </Border>
                  
 
                     </Grid>
-                </Frame>
+                </Border>
 
             
             </VerticalStackLayout>

@@ -26,7 +26,7 @@
                             </StackLayout>
                  
                             <StackLayout Grid.Row="1" Orientation="Horizontal" Spacing="0" Margin="10,10,10,0" Padding="0">
-                                <Label TextColor="{DynamicResource Dark}" x:Name="MessageText" FontSize="Subtitle" HorizontalOptions="CenterAndExpand" HorizontalTextAlignment="Center"></Label>
+                            <Label TextColor="{DynamicResource DarkText}" FontAttributes="Bold" x:Name="MessageText" FontSize="Subtitle" HorizontalOptions="CenterAndExpand" HorizontalTextAlignment="Center"></Label>
                             </StackLayout>
                     
                             <FlexLayout Grid.Row="2" AlignContent="SpaceEvenly" Margin="0,15" Padding="0" HorizontalOptions="CenterAndExpand">
