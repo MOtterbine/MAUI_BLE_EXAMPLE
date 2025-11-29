@@ -2,7 +2,7 @@ using System;
 using Microsoft.Maui;
 using Microsoft.Maui.Hosting;
 
-namespace MAUIAppSerialExample;
+namespace MAUI_BLE_EXAMPLE;
 
 class Program : MauiApplication
 {

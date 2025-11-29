@@ -1,7 +1,7 @@
 ﻿using ObjCRuntime;
 using UIKit;
 
-namespace MAUIAppSerialExample;
+namespace MAUI_BLE_EXAMPLE;
 
 public class Program
 {

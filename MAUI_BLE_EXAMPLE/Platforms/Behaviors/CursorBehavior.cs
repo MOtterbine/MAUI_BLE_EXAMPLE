@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace MAUIAppSerialExample;
+namespace MAUI_BLE_EXAMPLE;
 
 public class CursorBehavior : Behavior
 {

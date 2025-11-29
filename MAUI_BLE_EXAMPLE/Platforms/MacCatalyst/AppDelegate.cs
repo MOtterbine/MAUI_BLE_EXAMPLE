@@ -1,6 +1,6 @@
 ﻿using Foundation;
 
-namespace MAUIAppSerialExample;
+namespace MAUI_BLE_EXAMPLE;
 
 [Register("AppDelegate")]
 public class AppDelegate : MauiUIApplicationDelegate
