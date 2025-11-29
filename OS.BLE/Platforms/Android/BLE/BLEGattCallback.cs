@@ -1,4 +1,5 @@
-﻿using Android.Bluetooth;
+﻿using Android.App;
+using Android.Bluetooth;
 using Android.Bluetooth.LE;
 using Android.Runtime;
 using Java.Util;
@@ -11,25 +12,27 @@ public class BLEGattCallback : BluetoothGattCallback
     public event GattEvent GattEvent;
 
     private AutoResetEvent gattOperationPending = new AutoResetEvent(true);
+    //private AutoResetEvent gattReadOperationPending = new AutoResetEvent(true);
 
     /// <summary>
     /// Client Characteristic Configuration UUID
     /// </summary>
     private UUID CCC_DESCRIPTOR_UUID = UUID.FromString("00002902-0000-1000-8000-00805f9b34fb");
-    private async Task enableNotifications(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic)
+    private void enableNotifications(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic)
     {
         GattProperty properties = characteristic.Properties;
         if ((properties & GattProperty.Notify) > 0)
         {
+
             gatt.SetCharacteristicNotification (characteristic, true);
 
             BluetoothGattDescriptor descriptor = characteristic.GetDescriptor(CCC_DESCRIPTOR_UUID);
             descriptor.SetValue(BluetoothGattDescriptor.EnableNotificationValue.ToArray());
-
+           // descriptor.
             // Don't enter with a pending operation - is freed in OnDescriptorWrite(...) 
             gattOperationPending.WaitOne();
 
-            gatt.WriteDescriptor(descriptor);
+            gatt.WriteDescriptor(descriptor) ;
 
         }
     }
@@ -42,68 +45,61 @@ public class BLEGattCallback : BluetoothGattCallback
     }
 
     /// <summary>
-    /// Starts a task that sets up notifications for the characteristics passed in
+    /// Starts a task that sets up value-changed notifications for the characteristics passed in. Also does an initial read.
     /// </summary>
     /// <param name="gatt"></param>
     /// <param name="_characteristicList"></param>
-    public void SetupNotifications(BluetoothGatt gatt, IList<BluetoothGattCharacteristic> _characteristicList)
-    {
-        Task.Factory.StartNew(async () =>
-        {
-            // ensure threads are free to run at the start
-            gattOperationPending.Set(); 
-
-            foreach (var item in _characteristicList)
-            {
-                await enableNotifications(gatt, item);
-            }
-        });
-    }
-
-    public void ReadCharacteristics(BluetoothGatt gatt, IList<BluetoothGattCharacteristic> _characteristicList)
+    public void BindCharacteristics(BluetoothGatt gatt, IList<BluetoothGattCharacteristic> _characteristicList)
     {
 
-        Task.Factory.StartNew(() =>
+        // Get Characteristic Value Changed Notifications
+        gattOperationPending.Set();
+
+        foreach (var item in _characteristicList)
         {
-            // start a threads pacing operation
-            gattOperationPending.Set();
+            enableNotifications(gatt, item);
+        }
 
-            foreach (var item in _characteristicList)
-            {
-                // Auto resets (blocks) after WaitOne is called - until gattOperationPending.Set() is called again
-                gattOperationPending.WaitOne();
+        foreach (var item in _characteristicList)
+        {
+            // Auto resets (blocks) after WaitOne is called - until gattOperationPending.Set() is called again
+            gattOperationPending.WaitOne();
+            gatt.ReadCharacteristic(item);
+        }
 
-                gatt.ReadCharacteristic(item);
-            }
-        });
     }
-
 
     public override void OnCharacteristicRead(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, byte[] value, [GeneratedEnum] GattStatus status)
     {
-
         base.OnCharacteristicRead(gatt, characteristic, value, status);
+    }
 
-        this.FireDataChangedEvent(characteristic, value);
+    public override void OnCharacteristicRead(BluetoothGatt? gatt, BluetoothGattCharacteristic? characteristic, [GeneratedEnum] GattStatus status)
+    {
+        base.OnCharacteristicRead(gatt, characteristic, status);
 
-        // Signal that a write operation has completed
+        this.FireDataChangedEvent(characteristic, characteristic.GetValue());
+
+        // Signal that the operation has completed
         gattOperationPending.Set();
 
     }
 
     public override void OnCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, byte[] value)
     {
-
         base.OnCharacteristicChanged(gatt, characteristic, value);
+    }
 
+    public override void OnCharacteristicChanged(BluetoothGatt? gatt, BluetoothGattCharacteristic? characteristic)
+    {
+        base.OnCharacteristicChanged(gatt, characteristic);
 
-        this.FireDataChangedEvent(characteristic, value);
+        this.FireDataChangedEvent(characteristic, characteristic.GetValue());
 
-        // Signal that a write operation has completed
+        // Signal that the operation has completed
         gattOperationPending.Set();
 
     }
-
     public override void OnConnectionStateChange(BluetoothGatt? gatt, [GeneratedEnum] GattStatus status, [GeneratedEnum] ProfileState newState)
     {
         base.OnConnectionStateChange(gatt, status, newState);
@@ -144,17 +140,6 @@ public class BLEGattCallback : BluetoothGattCallback
 
     #region unused overrides
 
-    public override void OnCharacteristicRead(BluetoothGatt? gatt, BluetoothGattCharacteristic? characteristic, [GeneratedEnum] GattStatus status)
-    {
-        base.OnCharacteristicRead(gatt, characteristic, status);
-
-     //   this.notifyCharacteristicUpdate(characteristic, value);
-
-
-        // Signal that a write operation has completed
-       // gattOperationPending.Set();
-
-    }
 
 
     public override void OnServiceChanged(BluetoothGatt gatt)
@@ -198,10 +183,7 @@ public class BLEGattCallback : BluetoothGattCallback
     }
 
 
-    public override void OnCharacteristicChanged(BluetoothGatt? gatt, BluetoothGattCharacteristic? characteristic)
-    {
-        base.OnCharacteristicChanged(gatt, characteristic);
-    }
+
 
     public override void OnMtuChanged(BluetoothGatt? gatt, int mtu, [GeneratedEnum] GattStatus status)
     {

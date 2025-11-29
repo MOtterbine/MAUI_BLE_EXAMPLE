@@ -6,6 +6,7 @@ using Android.OS;
 using Android.Runtime;
 using Microsoft.Maui.Controls.PlatformConfiguration.AndroidSpecific;
 using OS.BLE;
+using static Java.Util.Jar.Attributes;
 
 namespace MAUI_BLE_EXAMPLE;
 
@@ -51,10 +52,8 @@ public class MainActivity : MauiAppCompatActivity
         {
 
             // Start permissions check...
-            // Start permissions check...
             RequestPermissions(new string[] { "android.permission.BLUETOOTH_CONNECT",
                                                                     "android.permission.BLUETOOTH_ADVERTISE",
-                                                                    "android.permission.BLUETOOTH_SCAN",
                                                                     "android.permission.BLUETOOTH_SCAN",
                                                                     "android.permission.ACCESS_FINE_LOCATION"
                                                                     }, 15001); // the value 15001 is arbitrary and random
@@ -62,8 +61,14 @@ public class MainActivity : MauiAppCompatActivity
         }
         else
         {
-            pApp.HasPermissions = true;
-            pApp.FirePermissionsReadyEvent();
+            // Start permissions check...
+            RequestPermissions(new string[] { "android.permission.ACCESS_COARSE_LOCATION", 
+                                                                    "android.permission.ACCESS_FINE_LOCATION"
+                                                                    }, 15001); // the value 15001 is arbitrary and random
+
+
+            //pApp.HasPermissions = true;
+            //pApp.FirePermissionsReadyEvent();
         }
 
     }

@@ -81,10 +81,6 @@ public  partial class MAUI_BLEDevice : IBLEDevice
 
     public BluetoothGatt _btGatt;
 
-    BLEStopScanCallback bscb = new BLEStopScanCallback();
-
-
-
     BluetoothLeScanner scanner;
     private Guid _mainServiceUUID = Guid.Empty;
 
@@ -187,9 +183,9 @@ public  partial class MAUI_BLEDevice : IBLEDevice
         CancelScanTimout();
         this._BLEScanCallback.ScanResultReceived -= OnScanResults;
 
-        this.bluetoothDevice = _BLEScanCallback.Devices.FirstOrDefault();
+        this.bluetoothDevice = _BLEScanCallback.CurrentDevice;
 
-        scanner.StopScan(bscb);
+        scanner.StopScan(_BLEScanCallback);
 
         if (BleEvent != null) BleEvent(this, new BLEEventArgs(BLEEventTypes.ScanResultsReceived));
     }
@@ -210,6 +206,7 @@ public  partial class MAUI_BLEDevice : IBLEDevice
     {
         StartScan();
     }
+
     protected void BTReceiver_BluetoothDisabled(object? sender, EventArgs e)
     {
         CloseGattOperations();

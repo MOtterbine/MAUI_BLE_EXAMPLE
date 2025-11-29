@@ -26,6 +26,7 @@ public class Constants
     public const string STRING_DISCONNECTED = "Disconnected";
     public const string STRING_CONNECTED = "*** Connected ***";
     public const string STRING_CONNECTING = "Connecting";
+    public const string STRING_STARTING = "Starting...";
     public const string STRING_SCANNING_DEVICES = "Scanning...";
     public const string STRING_NONE = "<None>";
 

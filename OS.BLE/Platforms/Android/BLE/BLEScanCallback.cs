@@ -8,7 +8,7 @@ namespace OS.BLE;
 public class BLEScanCallback : ScanCallback
 {
 
-    public List<BluetoothDevice> Devices { get; } = new List<BluetoothDevice>();
+    public BluetoothDevice CurrentDevice { get; private set; } = null;
     public string Address { get; private set; }
     public Android.OS.ParcelUuid[] Uuids { get; private set; }
     public string DeviceName { get; private set; }
@@ -34,14 +34,12 @@ public class BLEScanCallback : ScanCallback
         DeviceName = result.Device.Name;
 
         Console.WriteLine($"{DeviceName} - {Address}");
-        if (!Devices.Contains(result.Device))
-        {
-            Devices.Add(result.Device);
-        }
+        this.CurrentDevice = result.Device;
 
 
         if (ScanResultReceived != null) ScanResultReceived(this, EventArgs.Empty);
 
     }
+
 
 };

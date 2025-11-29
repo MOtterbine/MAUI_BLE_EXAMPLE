@@ -56,7 +56,7 @@ public partial class BLEPage : ContentPage
         //Bind the xaml to this class
         BindingContext = this;
 
-        StatusMessage = Constants.STRING_SCANNING_DEVICES;
+        StatusMessage = Constants.STRING_STARTING;
 
         if (pApp.HasPermissions)
         {
@@ -65,6 +65,8 @@ public partial class BLEPage : ContentPage
             if (_Esp32SuperMini == null) throw new NullReferenceException("Could not instantiate the basic code framework for MAUI_BLEDevice object as IMP3Player.");
             _Esp32SuperMini.BleEvent += OnBLEEvent;
             _Esp32SuperMini.StartScan();
+            StatusMessage = Constants.STRING_SCANNING_DEVICES;
+
         }
         else
         {
@@ -202,6 +204,7 @@ public partial class BLEPage : ContentPage
         if (_Esp32SuperMini == null) throw new NullReferenceException("Could not instantiate the basic code framework for MAUI_BLEDevice object as IBLEDevice.");
         _Esp32SuperMini.BleEvent += OnBLEEvent;
         _Esp32SuperMini.StartScan();
+        StatusMessage = Constants.STRING_SCANNING_DEVICES;
 
         OnPropertyChanged(nameof(CanSend));
     }

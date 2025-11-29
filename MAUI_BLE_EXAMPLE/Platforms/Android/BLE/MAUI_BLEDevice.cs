@@ -81,18 +81,20 @@ public partial class MAUI_BLEDevice : OS.BLE.MAUI_BLEDevice, IMyBLEControl
                     {
                         RemoteModuleCharacteristics.Add(item);
                     }
+
+                    Task.Factory.StartNew(async () =>
+                    {
+
+                        // ******************* Initial Read and Binding of Characteristics Notifications *********************
+                        ((BLEGattCallback)sender).BindCharacteristics(_btGatt, RemoteModuleCharacteristics);
+
+                        // Notify that we are now connected as a client
+                        FireDeviceEvent(new BLEEventArgs(BLEEventTypes.ConnectedAsClient));
+
+                    });
+
                 }
                 catch { }
-
-                // ******************* Initial Read of data FROM the device *********************
-                ((BLEGattCallback)sender).ReadCharacteristics(_btGatt, RemoteModuleCharacteristics);
-
-                // ******************* Setup for notifications for changes FROM the device *********************
-                ((BLEGattCallback)sender).SetupNotifications(_btGatt, RemoteModuleCharacteristics);
-
-                FireDeviceEvent(new BLEEventArgs(BLEEventTypes.ConnectedAsClient));
-
-
                 break;
             case GattEventTypes.DataReady: // *********** Device-Initiated UI Updates **********
                 var characteristicData = e.characteristic;// data as Tuple<string, object>;
