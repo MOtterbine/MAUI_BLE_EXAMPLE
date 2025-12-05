@@ -65,10 +65,6 @@ public class MainActivity : MauiAppCompatActivity
             RequestPermissions(new string[] { "android.permission.ACCESS_COARSE_LOCATION", 
                                                                     "android.permission.ACCESS_FINE_LOCATION"
                                                                     }, 15001); // the value 15001 is arbitrary and random
-
-
-            //pApp.HasPermissions = true;
-            //pApp.FirePermissionsReadyEvent();
         }
 
     }

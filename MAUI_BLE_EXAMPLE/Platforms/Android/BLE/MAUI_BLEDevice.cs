@@ -16,6 +16,10 @@ public partial class MAUI_BLEDevice : OS.BLE.MAUI_BLEDevice, IMyBLEControl
 
     public MAUI_BLEDevice() : base(Constants.UUID_BLE_SERVICE_UUID)
     {
+        // Handle Blueto
+        var activity = Microsoft.Maui.ApplicationModel.Platform.CurrentActivity;
+        (activity as MainActivity).BTReceiver.BluetoothEnabled += BTReceiver_BluetoothEnabled;
+        (activity as MainActivity).BTReceiver.BluetoothDisabled += BTReceiver_BluetoothDisabled;
 
     }
 
@@ -53,9 +57,9 @@ public partial class MAUI_BLEDevice : OS.BLE.MAUI_BLEDevice, IMyBLEControl
                 StartScan();
                 break;
             case GattEventTypes.ServicesDiscovered:
-                IList<BluetoothGattService> gattServices = e.data as IList<BluetoothGattService>;
+                if ((e.data is not IList<BluetoothGattService>)) return;
 
-                if (gattServices == null) return;
+                IList<BluetoothGattService> gattServices = e.data as IList<BluetoothGattService>;
 
                 if (DiscoveredGattServices.Count > 0) // already been here, done this
                 {

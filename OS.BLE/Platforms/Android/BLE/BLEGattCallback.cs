@@ -1,10 +1,7 @@
-﻿using Android.App;
-using Android.Bluetooth;
+﻿using Android.Bluetooth;
 using Android.Bluetooth.LE;
 using Android.Runtime;
 using Java.Util;
-using System.Text;
-using static Android.Media.Audiofx.AudioEffect;
 
 namespace OS.BLE;
 
@@ -12,12 +9,44 @@ public class BLEGattCallback : BluetoothGattCallback
 {
     public event GattEvent GattEvent;
 
-    private AutoResetEvent gattOperationPending = new AutoResetEvent(true);
+    /// <summary>
+    /// For characteristic read/write and descriptor read/write synchronization
+    /// </summary>
+    private static AutoResetEvent gattOperationPending = new AutoResetEvent(true);
 
     /// <summary>
     /// Client Characteristic Configuration UUID
     /// </summary>
     private UUID CCC_DESCRIPTOR_UUID = UUID.FromString("00002902-0000-1000-8000-00805f9b34fb");
+    /// <summary>
+    /// Starts a task that sets up value-changed notifications for the characteristics passed in. Also does an initial read.
+    /// </summary>
+    /// <param name="gatt"></param>
+    /// <param name="_characteristicList"></param>
+    public void BindCharacteristics(BluetoothGatt gatt, IList<BluetoothGattCharacteristic> _characteristicList)
+    {
+        // Initial Read of Characteristics
+        foreach (var item in _characteristicList)
+        {
+            readCharacteristic(gatt, item);
+        }
+
+        // Value-Changed Notifications
+        foreach (var item in _characteristicList)
+        {
+            enableNotifications(gatt, item);
+        }
+    }
+
+    private void readCharacteristic(BluetoothGatt gatt, BluetoothGattCharacteristic _characteristic)
+    {
+        // Read the value
+        gatt.ReadCharacteristic(_characteristic);
+
+        // wait until read is complete
+        gattOperationPending.WaitOne();
+    }
+
     private void enableNotifications(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic)
     {
         GattProperty properties = characteristic.Properties;
@@ -30,11 +59,11 @@ public class BLEGattCallback : BluetoothGattCallback
             BluetoothGattDescriptor descriptor = characteristic.GetDescriptor(CCC_DESCRIPTOR_UUID);
             descriptor.SetValue(BluetoothGattDescriptor.EnableNotificationValue.ToArray());
 
-            // Wait for any previous write to complete
-            gattOperationPending.WaitOne();
-
-            // Write the descriptor to enable notifications
+            // Write the descriptor to enable notifications.
             gatt.WriteDescriptor(descriptor);
+
+            // wait until write is completed
+            gattOperationPending.WaitOne();
 
         }
     }
@@ -42,35 +71,8 @@ public class BLEGattCallback : BluetoothGattCallback
     public override void OnDescriptorWrite(BluetoothGatt? gatt, BluetoothGattDescriptor? descriptor, [GeneratedEnum] GattStatus status)
     {
         base.OnDescriptorWrite(gatt, descriptor, status);
-        // Signal that a write operation has completed
+        // Signal the operation as completed
         gattOperationPending.Set();
-    }
-
-    /// <summary>
-    /// Starts a task that sets up value-changed notifications for the characteristics passed in. Also does an initial read.
-    /// </summary>
-    /// <param name="gatt"></param>
-    /// <param name="_characteristicList"></param>
-    public void BindCharacteristics(BluetoothGatt gatt, IList<BluetoothGattCharacteristic> _characteristicList)
-    {
-        // Initial Read of Characteristics
-        gattOperationPending.Set();
-        foreach (var item in _characteristicList)
-        {
-            // Auto resets (blocks) after WaitOne is called - until gattOperationPending.Set() is called again
-            gatt.ReadCharacteristic(item);
-            gattOperationPending.WaitOne();
-        }
-
-        // Get Characteristic Value Changed Notifications
-        gattOperationPending.Set();
-        foreach (var item in _characteristicList)
-        {
-            enableNotifications(gatt, item);
-
-        }
-
-
     }
 
     public override void OnCharacteristicRead(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, byte[] value, [GeneratedEnum] GattStatus status)
@@ -99,9 +101,6 @@ public class BLEGattCallback : BluetoothGattCallback
         base.OnCharacteristicChanged(gatt, characteristic);
 
         this.FireDataChangedEvent(characteristic, characteristic.GetValue());
-
-        // Signal that the operation has completed
-        gattOperationPending.Set();
 
     }
     public override void OnConnectionStateChange(BluetoothGatt? gatt, [GeneratedEnum] GattStatus status, [GeneratedEnum] ProfileState newState)

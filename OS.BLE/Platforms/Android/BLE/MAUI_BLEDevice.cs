@@ -8,7 +8,7 @@ namespace OS.BLE;
 
 
 
-public  partial class MAUI_BLEDevice : IBLEDevice
+public abstract partial class MAUI_BLEDevice : IBLEDevice
 {
 
     #region BLE Scan Timeout

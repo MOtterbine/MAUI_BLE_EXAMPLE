@@ -10,7 +10,7 @@ using Application = Microsoft.Maui.Controls.Application;
 namespace OS.BLE;
 
 
-public partial class MAUI_BLEDevice : IBLEDevice
+public abstract partial class MAUI_BLEDevice : IBLEDevice
 {
     public string Name => (_mainDevice == null) ? Constants.STRING_NONE : _mainDevice.Name;
 
@@ -370,6 +370,25 @@ public partial class MAUI_BLEDevice : IBLEDevice
         // intended to be handled in overridden method in derived class
     }
 
+    protected void WriteCharacteristicValue(Guid charUuid, byte [] val)
+    {
+
+        // find the charactersitic by UUID
+        var ch = RemoteModuleCharacteristics.Where(c => c.Uuid.CompareTo(charUuid) == 0).FirstOrDefault();
+
+        // can we even do this?
+        if (ch == null) return;
+
+        try
+        {
+            // Set the value on the device
+            ch.WriteValueAsync(val.AsBuffer());
+        }
+        catch
+        {
+
+        }
+    }
     protected void WriteCharacteristicValue(Guid charUuid, byte val)
     {
 
