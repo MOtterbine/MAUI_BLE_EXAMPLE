@@ -14,6 +14,7 @@ public class BLEGattCallback : BluetoothGattCallback
     /// </summary>
     private static AutoResetEvent gattOperationPending = new AutoResetEvent(true);
 
+    
     /// <summary>
     /// Client Characteristic Configuration UUID
     /// </summary>
@@ -112,11 +113,8 @@ public class BLEGattCallback : BluetoothGattCallback
             case ProfileState.Connected:
                 if (status == GattStatus.Success)
                 {
-                    if (gatt.Connect())
-                    {
-                        FireEvent(new GattEventArgs(GattEventTypes.Connected) { data = gatt });
-                        gatt.DiscoverServices();
-                    }
+                    FireEvent(new GattEventArgs(GattEventTypes.Connected) { data = gatt });
+                    gatt.DiscoverServices();
                 }
                 break;
             case ProfileState.Disconnected:

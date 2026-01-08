@@ -117,19 +117,22 @@ public abstract partial class MAUI_BLEDevice : IBLEDevice
         _btGatt?.Dispose();
         _btGatt = null;
         RemoteModuleCharacteristics.Clear();
+        FireDeviceEvent(new BLEEventArgs(BLEEventTypes.Disconnected));
     }
 
+
+    private ProfileState GetConnectionState()
+    {
+        if (this.bluetoothDevice == null) return ProfileState.Disconnected;
+        var btMgr = GetBluetoothManager();
+        if (btMgr == null) return ProfileState.Disconnected;
+        return  btMgr.GetConnectionState(this.bluetoothDevice, ProfileType.Gatt);
+    }
 
     public void Connect()
     {
 
-        if (this.bluetoothDevice == null)
-        {
-            return;
-        }
-
-        var btMgr = GetBluetoothManager();
-        var gattConnectionState = btMgr.GetConnectionState(this.bluetoothDevice, ProfileType.Gatt);
+        var gattConnectionState = GetConnectionState();
 
         if (_btGatt != null)
         {
@@ -147,8 +150,14 @@ public abstract partial class MAUI_BLEDevice : IBLEDevice
                         gattCallback.GattEvent -= OnGattEvent;
                         gattCallback.GattEvent += OnGattEvent;
 
-                        // device is set via callback  connectionchanged override
-                        this.bluetoothDevice.ConnectGatt(Android.App.Application.Context, false, gattCallback);
+                        if (this._btGatt != null)
+                        {
+                            _btGatt?.Close();
+                            _btGatt?.Dispose();
+                            _btGatt = null;
+                        }
+                            // device is set via callback  connectionchanged override
+                            this.bluetoothDevice.ConnectGatt(Android.App.Application.Context, false, gattCallback);
 
                     });
                     return;
@@ -237,24 +246,9 @@ public abstract partial class MAUI_BLEDevice : IBLEDevice
 
         try
         {
-            if (_btGatt != null && bluetoothDevice != null)
-            {
-                if(_btGatt.ConnectedDevices!=null &&_btGatt.ConnectedDevices.Count > 0)
-                {
-                    foreach (var item in _btGatt.ConnectedDevices)
-                    {
-                        if(string.Compare(item.Address, this.bluetoothDevice.Address) == 0)
-                        {
-                            // we're already connected
-                            FireDeviceEvent(new BLEEventArgs(BLEEventTypes.ConnectedAsClient));
-                            return;
-                        }
-                    }
-                }
-            }
 
             // Start a timer to see if this hangs
-        //    RestartScanTimer();
+            //    RestartScanTimer();
             FireDeviceEvent(new BLEEventArgs(BLEEventTypes.Scanning));
 
             DiscoveredGattServices?.Clear();

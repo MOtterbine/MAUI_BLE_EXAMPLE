@@ -47,7 +47,8 @@ public partial class MAUI_BLEDevice : OS.BLE.MAUI_BLEDevice, IMyBLEControl
             case GattEventTypes.Connected:
                 _btGatt = e.data as BluetoothGatt;
                 CancelScanTimout();
-                FireDeviceEvent(new BLEEventArgs(BLEEventTypes.Connecting));
+                // not fully connected until we get the services
+                FireDeviceEvent(new BLEEventArgs(BLEEventTypes.DiscoveringServices));
                 break;
             case GattEventTypes.Disconnected:
                 CloseGattOperations();

@@ -28,6 +28,7 @@ public class Constants
     public const string STRING_CONNECTING = "Connecting";
     public const string STRING_STARTING = "Starting...";
     public const string STRING_SCANNING_DEVICES = "Scanning...";
+    public const string STRING_DISCOVERING_SERVICES = "Discovering Services...";
     public const string STRING_NONE = "<None>";
 
 

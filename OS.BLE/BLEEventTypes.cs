@@ -3,6 +3,7 @@
 public enum BLEEventTypes
 {
     ScanResultsReceived,
+    DiscoveringServices,
     ServicesDiscovered,
     RemoteDataReady,
     ConnectedAsClient,

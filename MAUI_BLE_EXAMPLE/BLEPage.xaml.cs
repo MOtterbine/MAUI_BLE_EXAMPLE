@@ -140,19 +140,26 @@ public partial class BLEPage : ContentPage
                 StatusMessage = "Scan Complete\n";
                 this._Esp32SuperMini.Connect();
                 break;
+            case BLEEventTypes.DiscoveringServices:
+                OnPropertyChanged(nameof(DeviceName));
+                StatusMessage = Constants.STRING_DISCOVERING_SERVICES;
+                break;
             case BLEEventTypes.Connecting:
                 ResetFields();
                 StatusMessage = Constants.STRING_CONNECTING;
                 break;
             case BLEEventTypes.ConnectedAsClient:
+                UpdateConrols();
                 StatusMessage = Constants.STRING_CONNECTED;
                 CanSend = true;
                 break;
             case BLEEventTypes.Disconnected:
+                ResetFields();
                 CanSend = false;
                 StatusMessage = Constants.STRING_DISCONNECTED;
                 break;
             case BLEEventTypes.Scanning:
+                ResetFields();
                 CanSend = false;
                 StatusMessage = Constants.STRING_SCANNING_DEVICES;
                 break;
